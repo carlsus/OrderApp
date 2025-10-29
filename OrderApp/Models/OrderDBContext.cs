@@ -4,11 +4,11 @@ namespace OrderApp.Models
 {
     public partial class OrderDBContext : DbContext
     {
-        public OrderDBContext() { }      
+        public OrderDBContext() { }
         public OrderDBContext(DbContextOptions<OrderDBContext> options)
             : base(options)
         {
-            Database.EnsureCreated();
+            //Database.EnsureCreated();
         }
 
         public virtual DbSet<Customer> Customers { get; set; }
