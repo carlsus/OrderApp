@@ -1,7 +1,15 @@
+using Microsoft.EntityFrameworkCore;
+using OrderApp.Models;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddDbContext<OrderDBContext>(options =>
+    options.UseMySql(builder.Configuration.GetConnectionString("OrderDatabase"),
+    new MySqlServerVersion(new Version(8, 4, 77))
+    ?? throw new InvalidOperationException("Connection string 'OrderDatabase' not found.")));
 
 var app = builder.Build();
 
