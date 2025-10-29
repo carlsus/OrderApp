@@ -74,17 +74,37 @@
           <!--begin::Sidebar Menu-->
           <ul class="nav sidebar-menu flex-column" data-lte-toggle="treeview" role="navigation"
             aria-label="Main navigation" data-accordion="false" id="navigation">
-            <li class="nav-item menu-open">
-              <a class="nav-link text-dark" asp-area="" asp-controller="Customers" asp-action="Index">Customers</a>
-              @* <a href="#" class="nav-link" asp-area="" asp-controller="Customers" asp-action="Index">
-                <i class="nav-icon bi bi-speedometer"></i>
-                <p>
-                  Customer
+            <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Customers" asp-action="Index">
+                                <i class="nav-icon bi bi-person"></i>
+                                <p>
+                                    Customer
 
-                </p>
-              </a> *@
+                                </p>
+                            </a>
+            
             </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="SKUs" asp-action="Index">
+                                <i class="nav-icon bi bi-card-list"></i>
+                                <p>
+                                    SKU
 
+                                </p>
+                            </a>
+
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="SKUs" asp-action="Index">
+                                <i class="nav-icon bi bi-bag-fill"></i>
+                                <p>
+                                    Orders
+
+                                </p>
+                            </a>
+
+                        </li>
+            </ul>
             <!--end::Sidebar Menu-->
         </nav>
       </div>

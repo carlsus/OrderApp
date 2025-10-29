@@ -4,92 +4,187 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.FirstName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.LastName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.MobileNumber)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.City)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Long)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Lat)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DateCreated)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CreatedBy)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Timesamp)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.UserId)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IsActive)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.FirstName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.LastName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.MobileNumber)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.City)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Long)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Lat)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DateCreated)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CreatedBy)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Timesamp)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.UserId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IsActive)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+
+<main class="app-main">
+    <!--begin::App Content Header-->
+    <div class="app-content-header">
+        <!--begin::Container-->
+        <div class="container-fluid">
+            <!--begin::Row-->
+            <div class="row">
+                <div class="col-sm-6"><h3 class="mb-0">Customers</h3></div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-end">
+                        <li class="breadcrumb-item"><a href="#">Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Customers</li>
+                    </ol>
+                </div>
+            </div>
+            <!--end::Row-->
+        </div>
+        <!--end::Container-->
+    </div>
+    <!--end::App Content Header-->
+    <!--begin::App Content-->
+    <div class="app-content">
+        <!--begin::Container-->
+        <div class="container-fluid">
+            <!--begin::Row-->
+            <div class="row">
+                <div class="col-md-12">
+
+                    <div class="card mb-4">
+                        <div class="card-header">
+
+                            <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#customerModal" onclick="clearModal()">Create New</a>
+                          
+                        </div>
+                        <!-- /.card-header -->
+                        <div class="card-body p-0">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Fullname</th>
+                                        <th>MobileNumber</th>
+                                        <th>City</th>
+                                        <th>Coordinates</th>
+                                        <th>IsActive</th>
+                                        <th style="width: 40px"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var customer in Model)
+                                    {
+                                        <tr>
+                                            <td>@($"{customer.FirstName} {customer.LastName}")</td>
+                                            <td>@customer.MobileNumber</td>
+                                            <td>@customer.City</td>
+                                            <td>@($"{customer.Long}, {customer.Lat}")</td>
+                                            <td>
+                                                <input type="checkbox" class="form-check-input" disabled @(customer.IsActive ? "checked" : "") />
+                                            </td>
+                                            <td>
+                                                <button class="btn btn-sm btn-warning edit-btn"
+                                                        data-id="@customer.Id"
+                                                        data-firstname="@customer.FirstName"
+                                                        data-lastname="@customer.LastName"
+                                                        data-mobile="@customer.MobileNumber"
+                                                        data-city="@customer.City"
+                                                        data-long="@customer.Long"
+                                                        data-lat="@customer.Lat"
+                                                        data-isactive="@customer.IsActive"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#customerModal">
+                                                    Edit
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- /.card-body -->
+                    </div>
+                    <!-- /.card -->
+                </div>
+            </div>
+            <!--end::Row-->
+        </div>
+        <!--end::Container-->
+    </div>
+    <!--end::App Content-->
+</main>
+<div class="modal fade" id="customerModal" tabindex="-1" aria-labelledby="customerModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <form id="customerForm">
+            <input type="hidden" name="Id" id="customerId" />
+
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">Add Customer</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <!-- Left Column: Form Fields -->
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label>First Name</label>
+                                <input type="text" name="FirstName" id="customerFirstName" class="form-control" required />
+                            </div>
+                            <div class="mb-3">
+                                <label>Last Name</label>
+                                <input type="text" name="LastName" id="customerLastName" class="form-control" required />
+                            </div>
+                            <div class="mb-3">
+                                <label>Mobile Number</label>
+                                <input type="text"
+                                       name="MobileNumber"
+                                       id="customerMobileNumber"
+                                       class="form-control"
+                                       inputmode="numeric"
+                                       maxlength="10"
+                                       required />
+                            </div>
+                            <div class="mb-3">
+                                <label>City</label>
+                                <input type="text" name="City" id="customerCity" class="form-control" required />
+                            </div>
+                            <div class="mb-3">
+                                <label>Longitude</label>
+                                <input type="text" name="Long" id="customerLong" class="form-control" readonly required />
+                            </div>
+                            <div class="mb-3">
+                                <label>Latitude</label>
+                                <input type="text" name="Lat" id="customerLat" class="form-control" readonly required />
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" name="IsActive" checked id="customerIsActive" class="form-check-input" />
+                                <label class="form-check-label" for="customerIsActive">Is Active</label>
+                            </div>
+                        </div>
+
+                        <!-- Right Column: Google Map -->
+                        <div class="col-md-6">
+                            <label class="form-label">Select Location</label>
+                            <div id="map" style="width:100%;height:400px;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary" id="submitBtn">Save</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCoKMpsi0cxRs2Vdv9tnFEfnLCGW5O2ctg&callback=initMap" async defer></script>
+<script>
+    let map, marker;
+
+    function initMap() {
+        // Default location
+        const defaultLoc = { lat: 14.5995, lng: 120.9842 }; // Manila
+
+        map = new google.maps.Map(document.getElementById("map"), {
+            center: defaultLoc,
+            zoom: 13,
+        });
+
+        map.addListener("click", (event) => {
+            const lat = event.latLng.lat();
+            const lng = event.latLng.lng();
+
+            // Ipakita sa console
+            console.log("Latitude: " + lat + ", Longitude: " + lng);
+
+            // Pwede mo rin ipakita sa input fields
+            document.getElementById("lat").value = lat;
+            document.getElementById("lng").value = lng;
+        });
+    }
+</script>
