@@ -66,7 +66,7 @@ namespace OrderApp.Migrations
                     b.Property<long>("MobileNumber")
                         .HasColumnType("bigint");
 
-                    b.Property<DateTime>("Timesamp")
+                    b.Property<DateTime>("Timestamp")
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("UserId")

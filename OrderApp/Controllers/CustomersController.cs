@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Net;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OrderApp.Models;
 
@@ -48,15 +49,36 @@ namespace OrderApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,FirstName,LastName,MobileNumber,City,Long,Lat,DateCreated,CreatedBy,Timesamp,UserId,IsActive")] Customer customer)
+        public async Task<IActionResult> Save([Bind("Id,FirstName,LastName,MobileNumber,City,Long,Lat,DateCreated,CreatedBy,Timestamp,UserId,IsActive")] Customer customer)
         {
-            if (ModelState.IsValid)
+            customer.DateCreated = DateTime.UtcNow;
+            customer.Timestamp = DateTime.UtcNow;
+            customer.CreatedBy = "System";
+            customer.IsActive = true;
+            customer.UserId = "System";
+            customer.Id = 1;
+            if (!ModelState.IsValid)
             {
-                _context.Add(customer);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+
+                return Json(new { success = false, issue = customer, errors = ModelState.Values.Where(i => i.Errors.Count > 0) });
             }
-            return View(customer);
+
+            if (customer.Id == 0)
+            {
+
+                _context.Customers.Add(customer);
+            }
+            else
+            {
+
+
+            }
+
+            _context.SaveChanges();
+
+            return Json(new { success = true, message = "Customer created successfully." });
         }
 
         // GET: Customers/Edit/5

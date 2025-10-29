@@ -4,8 +4,6 @@
     ViewData["Title"] = "Index";
 }
 
-
-
 <main class="app-main">
     <!--begin::App Content Header-->
     <div class="app-content-header">
@@ -13,7 +11,9 @@
         <div class="container-fluid">
             <!--begin::Row-->
             <div class="row">
-                <div class="col-sm-6"><h3 class="mb-0">Customers</h3></div>
+                <div class="col-sm-6">
+                    <h3 class="mb-0">Customers</h3>
+                </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-end">
                         <li class="breadcrumb-item"><a href="#">Home</a></li>
@@ -37,8 +37,9 @@
                     <div class="card mb-4">
                         <div class="card-header">
 
-                            <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#customerModal" onclick="clearModal()">Create New</a>
-                          
+                            <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#AddOrEdit"
+                                onclick="clearModal()">Create New</a>
+
                         </div>
                         <!-- /.card-header -->
                         <div class="card-body p-0">
@@ -62,20 +63,16 @@
                                             <td>@customer.City</td>
                                             <td>@($"{customer.Long}, {customer.Lat}")</td>
                                             <td>
-                                                <input type="checkbox" class="form-check-input" disabled @(customer.IsActive ? "checked" : "") />
+                                                <input type="checkbox" class="form-check-input" disabled @(customer.IsActive
+                                                                                                                                                         ? "checked" : "") />
                                             </td>
                                             <td>
-                                                <button class="btn btn-sm btn-warning edit-btn"
-                                                        data-id="@customer.Id"
-                                                        data-firstname="@customer.FirstName"
-                                                        data-lastname="@customer.LastName"
-                                                        data-mobile="@customer.MobileNumber"
-                                                        data-city="@customer.City"
-                                                        data-long="@customer.Long"
-                                                        data-lat="@customer.Lat"
-                                                        data-isactive="@customer.IsActive"
-                                                        data-bs-toggle="modal"
-                                                        data-bs-target="#customerModal">
+                                                <button class="btn btn-sm btn-warning edit-btn" data-id="@customer.Id"
+                                                    data-firstname="@customer.FirstName" data-lastname="@customer.LastName"
+                                                    data-mobile="@customer.MobileNumber" data-city="@customer.City"
+                                                    data-long="@customer.Long" data-lat="@customer.Lat"
+                                                    data-isactive="@customer.IsActive" data-bs-toggle="modal"
+                                                    data-bs-target="#customerModal">
                                                     Edit
                                                 </button>
                                             </td>
@@ -95,9 +92,11 @@
     </div>
     <!--end::App Content-->
 </main>
-<div class="modal fade" id="customerModal" tabindex="-1" aria-labelledby="customerModalLabel" aria-hidden="true">
+
+@* Modal *@
+<div class="modal fade" id="AddOrEdit" tabindex="-1" aria-labelledby="customerModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl">
-        <form id="customerForm">
+        <form id="Form0" method="post" asp-action="Save" asp-controller="Customers">
             <input type="hidden" name="Id" id="customerId" />
 
             <div class="modal-content">
@@ -111,21 +110,18 @@
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label>First Name</label>
-                                <input type="text" name="FirstName" id="customerFirstName" class="form-control" required />
+                                <input type="text" name="FirstName" id="customerFirstName" class="form-control"
+                                    required />
                             </div>
                             <div class="mb-3">
                                 <label>Last Name</label>
-                                <input type="text" name="LastName" id="customerLastName" class="form-control" required />
+                                <input type="text" name="LastName" id="customerLastName" class="form-control"
+                                    required />
                             </div>
                             <div class="mb-3">
                                 <label>Mobile Number</label>
-                                <input type="text"
-                                       name="MobileNumber"
-                                       id="customerMobileNumber"
-                                       class="form-control"
-                                       inputmode="numeric"
-                                       maxlength="10"
-                                       required />
+                                <input type="text" name="MobileNumber" id="customerMobileNumber" class="form-control"
+                                    inputmode="numeric" maxlength="10" required />
                             </div>
                             <div class="mb-3">
                                 <label>City</label>
@@ -133,14 +129,15 @@
                             </div>
                             <div class="mb-3">
                                 <label>Longitude</label>
-                                <input type="text" name="Long" id="customerLong" class="form-control" readonly required />
+                                <input type="text" name="Long" id="Long" class="form-control" readonly required />
                             </div>
                             <div class="mb-3">
                                 <label>Latitude</label>
-                                <input type="text" name="Lat" id="customerLat" class="form-control" readonly required />
+                                <input type="text" name="Lat" id="Lat" class="form-control" readonly required />
                             </div>
                             <div class="form-check">
-                                <input type="checkbox" name="IsActive" checked id="customerIsActive" class="form-check-input" />
+                                <input type="checkbox" name="IsActive" checked id="customerIsActive"
+                                    class="form-check-input" />
                                 <label class="form-check-label" for="customerIsActive">Is Active</label>
                             </div>
                         </div>
@@ -161,30 +158,85 @@
         </form>
     </div>
 </div>
+@section Scripts {
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCoKMpsi0cxRs2Vdv9tnFEfnLCGW5O2ctg&callback=initMap" async
+        defer></script>
+    <script>
+        let map;
+        let marker;
 
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCoKMpsi0cxRs2Vdv9tnFEfnLCGW5O2ctg&callback=initMap" async defer></script>
-<script>
-    let map, marker;
+        function initMap() {
+            // Default location: Manila
+            const defaultLoc = { lat: 14.5995, lng: 120.9842 };
 
-    function initMap() {
-        // Default location
-        const defaultLoc = { lat: 14.5995, lng: 120.9842 }; // Manila
+            // Initialize map
+            map = new google.maps.Map(document.getElementById("map"), {
+                center: defaultLoc,
+                zoom: 12,
+            });
 
-        map = new google.maps.Map(document.getElementById("map"), {
-            center: defaultLoc,
-            zoom: 13,
+            // Create draggable marker
+            marker = new google.maps.Marker({
+                position: defaultLoc,
+                map: map,
+                draggable: true, // ✅ Important part!
+                title: "I-drag ako para pumili ng location",
+            });
+
+            // Show default coordinates
+            document.getElementById("Lat").value = defaultLoc.lat;
+            document.getElementById("Long").value = defaultLoc.lng;
+
+            // Event: When marker is dragged and dropped
+            marker.addListener("dragend", (event) => {
+                const lat = event.latLng.lat();
+                const lng = event.latLng.lng();
+                document.getElementById("Lat").value = lat;
+                document.getElementById("Long").value = lng;
+            });
+
+            // Optional: When user clicks map, move marker there
+            map.addListener("click", (event) => {
+                marker.setPosition(event.latLng);
+                const lat = event.latLng.lat();
+                const lng = event.latLng.lng();
+                document.getElementById("Lat").value = lat;
+                document.getElementById("Long").value = lng;
+            });
+        }
+        $('#form0').submit(function (event) {
+            event.preventDefault();
+            $('#btnSave').attr('disabled', 'disabled');
+            var url = $(this).attr("action");
+            var formData = {
+                AgentName: $('#AgentName').val(),
+                Telephone: $('#Telephone').val(),
+                Fax: $('#Fax').val()
+            };
+            $.ajax({
+                url: url,
+                type: "POST",
+                data: JSON.stringify(formData),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+
+                    @* $.notify({
+                        title: '<strong>Agent Created </strong>',
+                        message: 'The agent has been created successfully.'
+                    }, {
+                        type: 'success'
+                    });
+                    table.ajax.reload(); *@
+                        $('#AddOrEdit').modal('hide');
+                },
+                error: function (response) {
+                    console.log(response);
+                },
+                complete: function () {
+                    $('#btnSave').removeAttr('disabled');
+                }
+            })
         });
-
-        map.addListener("click", (event) => {
-            const lat = event.latLng.lat();
-            const lng = event.latLng.lng();
-
-            // Ipakita sa console
-            console.log("Latitude: " + lat + ", Longitude: " + lng);
-
-            // Pwede mo rin ipakita sa input fields
-            document.getElementById("lat").value = lat;
-            document.getElementById("lng").value = lng;
-        });
-    }
-</script>
+    </script>
+}
