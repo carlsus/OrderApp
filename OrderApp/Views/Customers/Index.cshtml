@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<OrderApp.Models.Customer>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Customer";
 }
 
 <main class="app-main">
@@ -38,7 +38,7 @@
                         <div class="card-header">
 
                             <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#AddOrEdit"
-                                onclick="clearModal()">Create New</a>
+                                >Create New</a>
 
                         </div>
                         <!-- /.card-header -->
@@ -63,18 +63,30 @@
                                             <td>@customer.City</td>
                                             <td>@($"{customer.Long}, {customer.Lat}")</td>
                                             <td>
-                                                <input type="checkbox" class="form-check-input" disabled @(customer.IsActive
-                                                                                                                                                         ? "checked" : "") />
+                                                
+                                                @if(customer.IsActive)
+                                                {
+                                                    <span class="badge text-bg-success">Active</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge text-bg-dark">Inactive</span>
+                                                }
                                             </td>
                                             <td>
-                                                <button class="btn btn-sm btn-warning edit-btn" data-id="@customer.Id"
-                                                    data-firstname="@customer.FirstName" data-lastname="@customer.LastName"
-                                                    data-mobile="@customer.MobileNumber" data-city="@customer.City"
-                                                    data-long="@customer.Long" data-lat="@customer.Lat"
-                                                    data-isactive="@customer.IsActive" data-bs-toggle="modal"
-                                                    data-bs-target="#customerModal">
-                                                    Edit
-                                                </button>
+                                            <button class="btn btn-sm btn-default edit-btn"
+                                                    data-id="@customer.Id"
+                                                    data-firstname="@customer.FirstName"
+                                                    data-lastname="@customer.LastName"
+                                                    data-mobile="@customer.MobileNumber"
+                                                    data-city="@customer.City"
+                                                    data-long="@customer.Long"
+                                                    data-lat="@customer.Lat"
+                                                    data-isactive="@customer.IsActive"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#AddOrEdit">
+                                                Edit
+                                            </button>
                                             </td>
                                         </tr>
                                     }
@@ -96,8 +108,8 @@
 @* Modal *@
 <div class="modal fade" id="AddOrEdit" tabindex="-1" aria-labelledby="customerModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl">
-        <form id="Form0" method="post" asp-action="Save" asp-controller="Customers">
-            <input type="hidden" name="Id" id="customerId" />
+        <form id="form0">
+            <input type="hidden" name="Id" id="Id" />
 
             <div class="modal-content">
                 <div class="modal-header">
@@ -110,22 +122,22 @@
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label>First Name</label>
-                                <input type="text" name="FirstName" id="customerFirstName" class="form-control"
+                                <input type="text" name="FirstName" id="FirstName" class="form-control"
                                     required />
                             </div>
                             <div class="mb-3">
                                 <label>Last Name</label>
-                                <input type="text" name="LastName" id="customerLastName" class="form-control"
+                                <input type="text" name="LastName" id="LastName" class="form-control"
                                     required />
                             </div>
                             <div class="mb-3">
                                 <label>Mobile Number</label>
-                                <input type="text" name="MobileNumber" id="customerMobileNumber" class="form-control"
+                                <input type="text" name="MobileNumber" id="MobileNumber" class="form-control"
                                     inputmode="numeric" maxlength="10" required />
                             </div>
                             <div class="mb-3">
                                 <label>City</label>
-                                <input type="text" name="City" id="customerCity" class="form-control" required />
+                                <input type="text" name="City" id="City" class="form-control" required />
                             </div>
                             <div class="mb-3">
                                 <label>Longitude</label>
@@ -136,9 +148,9 @@
                                 <input type="text" name="Lat" id="Lat" class="form-control" readonly required />
                             </div>
                             <div class="form-check">
-                                <input type="checkbox" name="IsActive" checked id="customerIsActive"
+                                <input type="checkbox" name="IsActive" checked id="IsActive"
                                     class="form-check-input" />
-                                <label class="form-check-label" for="customerIsActive">Is Active</label>
+                                <label class="form-check-label" for="IsActive">Is Active</label>
                             </div>
                         </div>
 
@@ -164,11 +176,12 @@
     <script>
         let map;
         let marker;
+        
+        const defaultLoc = { lat: 14.5995, lng: 120.9842 };
+       
 
         function initMap() {
-            // Default location: Manila
-            const defaultLoc = { lat: 14.5995, lng: 120.9842 };
-
+            
             // Initialize map
             map = new google.maps.Map(document.getElementById("map"), {
                 center: defaultLoc,
@@ -179,15 +192,14 @@
             marker = new google.maps.Marker({
                 position: defaultLoc,
                 map: map,
-                draggable: true, // ✅ Important part!
-                title: "I-drag ako para pumili ng location",
+                draggable: true,
             });
 
-            // Show default coordinates
+         
             document.getElementById("Lat").value = defaultLoc.lat;
             document.getElementById("Long").value = defaultLoc.lng;
 
-            // Event: When marker is dragged and dropped
+           
             marker.addListener("dragend", (event) => {
                 const lat = event.latLng.lat();
                 const lng = event.latLng.lng();
@@ -195,7 +207,7 @@
                 document.getElementById("Long").value = lng;
             });
 
-            // Optional: When user clicks map, move marker there
+           
             map.addListener("click", (event) => {
                 marker.setPosition(event.latLng);
                 const lat = event.latLng.lat();
@@ -204,31 +216,69 @@
                 document.getElementById("Long").value = lng;
             });
         }
+       
+        
+         $('.edit-btn').click(function () {
+             const form = document.getElementById('form0');
+            $('#modalTitle').text('Edit Customer');
+            $('#submitBtn').text('Update');
+            $('#Id').val($(this).data('id'));
+            $('#FirstName').val($(this).data('firstname'));
+            $('#LastName').val($(this).data('lastname'));
+            $('#MobileNumber').val('0' + $(this).data('mobile'));
+            $('#City').val($(this).data('city'));
+            $('#Long').val($(this).data('long'));
+            $('#Lat').val($(this).data('lat'));
+
+            var isActive = $(this).data('isactive') === 'True' ? true : false;
+            $('#IsActive').prop('checked', isActive);
+             $('#IsActive').attr('disabled', false);
+            const lat = parseFloat($(this).data('lat'));
+            const lng = parseFloat($(this).data('long'));
+            defaultLoc = { lat: lat, lng: lng };
+            
+        });
+        
         $('#form0').submit(function (event) {
             event.preventDefault();
-            $('#btnSave').attr('disabled', 'disabled');
-            var url = $(this).attr("action");
+
+            var Id = $('#Id').val();
+           
             var formData = {
-                AgentName: $('#AgentName').val(),
-                Telephone: $('#Telephone').val(),
-                Fax: $('#Fax').val()
+                firstName: $('#FirstName').val(),
+                lastName: $('#LastName').val(),
+                mobileNumber: $('#MobileNumber').val(),
+                city: $('#City').val(),
+                long: $('#Long').val(),
+                lat: $('#Lat').val(),
+                isActive: $('#IsActive').is(':checked'),
+                userId: $('#userId').val(),
+                createdBy: $('#createdBy').val()
             };
+
+
+            if (Id) {
+                formData.id = parseInt(Id);
+            }
+
+            var url = Id ? '/Customers/Edit/' + Id : '/Customers/Create';
+            var method = Id ? 'PUT' : 'POST';
+
+
             $.ajax({
                 url: url,
-                type: "POST",
+                method: method,
                 data: JSON.stringify(formData),
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
                 success: function (response) {
 
-                    @* $.notify({
-                        title: '<strong>Agent Created </strong>',
-                        message: 'The agent has been created successfully.'
-                    }, {
-                        type: 'success'
-                    });
-                    table.ajax.reload(); *@
-                        $('#AddOrEdit').modal('hide');
+                   if (response.success) {
+                        location.reload();
+                         $('#AddOrEdit').modal('hide');
+                    } else {
+                        alert(response.errors.join("\n"));
+                    }
                 },
                 error: function (response) {
                     console.log(response);

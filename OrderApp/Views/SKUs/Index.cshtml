@@ -1,83 +1,235 @@
 ﻿@model IEnumerable<OrderApp.Models.SKU>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "SKU";
 }
 
-<h1>Index</h1>
+<main class="app-main">
+    <!--begin::App Content Header-->
+    <div class="app-content-header">
+        <!--begin::Container-->
+        <div class="container-fluid">
+            <!--begin::Row-->
+            <div class="row">
+                <div class="col-sm-6">
+                    <h3 class="mb-0">SKU</h3>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-end">
+                        <li class="breadcrumb-item"><a href="#">Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">SKU</li>
+                    </ol>
+                </div>
+            </div>
+            <!--end::Row-->
+        </div>
+        <!--end::Container-->
+    </div>
+    <!--end::App Content Header-->
+    <!--begin::App Content-->
+    <div class="app-content">
+        <!--begin::Container-->
+        <div class="container-fluid">
+            <!--begin::Row-->
+            <div class="row">
+                <div class="col-md-12">
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Code)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.UnitPrice)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DateCreated)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CreatedBy)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Timestamp)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.UserId)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IsActive)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ImagePath)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Code)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.UnitPrice)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DateCreated)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CreatedBy)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Timestamp)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.UserId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IsActive)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ImagePath)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
+                    <div class="card mb-4">
+                        <div class="card-header">
+
+                            <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#AddOrEdit">Create New</a>
+
+                        </div>
+                        <!-- /.card-header -->
+                        <div class="card-body p-0">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Code</th>
+                                        <th>Unit Price</th>
+                                        <th>IsActive</th>
+                                        <th>Image</th>
+                                        <th style="width: 40px"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var sku in Model)
+                                    {
+                                        <tr>
+                                           
+                                            <td>@sku.Name</td>
+                                            <td>@sku.Code</td>
+                                            <td>@sku.UnitPrice</td>
+                                   
+                                            <td>
+                                                @if (sku.IsActive)
+                                                {
+                                                    <span class="badge text-bg-success">Active</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge text-bg-dark">Inactive</span>
+                                                }
+                                            </td>   
+                                            <td>
+                                                Image
+                                            </td>
+                                            <td>
+                                            @if (!string.IsNullOrEmpty(sku.ImagePath))
+                                                {
+                                                    <img src="@Url.Content(sku.ImagePath)" alt="SKU Image" width="50" height="50" />
+                                                }
+                                            </td>
+                                        <td>
+                                            <button class="btn btn-sm btn-default edit-btn"
+                                                    data-id="@sku.Id"
+                                                    data-name="@sku.Name"
+                                                    data-code="@sku.Code"
+                                                    data-unitprice="@sku.UnitPrice"
+                                                    data-isactive="@sku.IsActive"
+                                                    data-image="@sku.ImagePath"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#AddOrEdit">
+                                                Edit
+                                            </button>
+                                        </td>
+                                    </tr>
+                                                                        }
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- /.card-body -->
+                    </div>
+                    <!-- /.card -->
+                </div>
+            </div>
+            <!--end::Row-->
+        </div>
+        <!--end::Container-->
+    </div>
+    <!--end::App Content-->
+</main>
+
+@* Modal *@<div class="modal fade" id="AddOrEdit" tabindex="-1" aria-labelledby="skuModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form id="form0" enctype="multipart/form-data">
+            <input type="hidden" name="Id" id="Id" />
+
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="ModalTitle">Add SKU</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <!-- Left Column: Fields -->
+                        <div class="col-md-12">
+                            <div class="mb-3">
+                                <label for="Name" class="form-label">Name</label>
+                                <input type="text" name="Name" id="Name" class="form-control" required />
+                            </div>
+                            <div class="mb-3">
+                                <label for="Code" class="form-label">Code</label>
+                                <input type="text" name="Code" id="Code" class="form-control" required />
+                            </div>
+                            <div class="mb-3">
+                                <label for="UnitPrice" class="form-label">Unit Price</label>
+                                <input type="number" name="UnitPrice" id="UnitPrice" class="form-control" step="0.01" required />
+                            </div>
+                            <div class="mb-3">
+                                <label for="Image" class="form-label">Image</label>
+                                <input type="file" name="skuImage" id="Image" class="form-control" accept="image/*" />
+
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" name="IsActive" id="IsActive" class="form-check-input" checked />
+                                <label class="form-check-label" for="IsActive">Is Active</label>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary" id="submitBtn">Save</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+@section Scripts {
+
+    <script>
+       
+
+         $('.edit-btn').click(function () {
+             const form = document.getElementById('form0');
+            $('#modalTitle').text('Edit SKU');
+            $('#submitBtn').text('Update');
+           
+            $('#Id').val($(this).data('id'));
+            $('#Name').val($(this).data('name'));
+            $('#Code').val($(this).data('code'));
+            $('#UnitPrice').val('0' + $(this).data('unitprice'));
+           
+
+            var isActive = $(this).data('isactive') === 'True' ? true : false;
+            $('#IsActive').prop('checked', isActive);
+            $('#IsActive').attr('disabled', false);
+           
+
+        });
+
+        $('#form0').submit(function (event) {
+            event.preventDefault();
+
+
+            var Id = $('#Id').val();
+            var formData = new FormData();
+          
+            formData.append('Name', $('#Name').val());
+            formData.append('Code', $('#Code').val());
+            formData.append('UnitPrice', parseFloat($('#UnitPrice').val()));
+            formData.append('IsActive', $('#IsActive').is(':checked'));
+            formData.append('UserId', $('#UserId').val());
+            formData.append('CreatedBy', $('#CreatedBy').val());
+
+            var imageFile = $('#Image')[0].files[0];
+            if (imageFile) {
+                formData.append('Image', imageFile);
+            }
+
+
+            if (Id) {
+                formData.append('Id', parseInt(Id));
+            }
+            var url = Id ? '/SKUs/Edit/' + Id : '/SKUs/Create';
+            var method = Id ? 'PUT' : 'POST';
+
+
+            $.ajax({
+                url: url,
+                method: method,
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    if (response.success) {
+                        location.reload();
+                         $('#AddOrEdit').modal('hide');
+                    } else {
+                        alert(response.errors.join("\n"));
+                    }
+                },
+                error: function (response) {
+                    console.log(response);
+                },
+                complete: function () {
+                    $('#btnSave').removeAttr('disabled');
+                }
+            })
+        });
+    </script>
 }
-    </tbody>
-</table>

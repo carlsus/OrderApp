@@ -52,16 +52,20 @@ namespace OrderApp.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Code,UnitPrice,DateCreated,CreatedBy,Timestamp,UserId,IsActive,ImagePath")] SKU sKU)
+        public async Task<IActionResult> Create([FromForm] SKU sku,IFormFile Image)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(sKU);
+                _context.Add(sku);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+
+                return Json(new { success = true, message = "SKU created successfully." });
             }
-            return View(sKU);
+            var errors = ModelState.Values
+            .SelectMany(v => v.Errors)
+            .Select(e => e.ErrorMessage)
+            .ToList();
+            return Json(new { success = false, errors });
         }
 
         // GET: SKUs/Edit/5
@@ -83,9 +87,8 @@ namespace OrderApp.Controllers
         // POST: SKUs/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Code,UnitPrice,DateCreated,CreatedBy,Timestamp,UserId,IsActive,ImagePath")] SKU sKU)
+        [HttpPut]
+        public async Task<IActionResult> Edit(int id, [FromForm] SKU sKU, IFormFile Image)
         {
             if (id != sKU.Id)
             {
@@ -96,61 +99,26 @@ namespace OrderApp.Controllers
             {
                 try
                 {
-                    _context.Update(sKU);
-                    await _context.SaveChangesAsync();
+                    var local = _context.Skus.Local.FirstOrDefault(c => c.Id == sKU.Id);
+                    if (local != null)
+                    {
+                        _context.Entry(local).State = EntityState.Detached;
+                    }
+
+                    _context.Attach(sKU);
+                    _context.Entry(sKU).State = EntityState.Modified;
+                    _context.SaveChanges();
+
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!SKUExists(sKU.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    throw;
                 }
-                return RedirectToAction(nameof(Index));
+                return Json(new { success = true, message = "Update  successfully." });
             }
-            return View(sKU);
+            return Json(new { success = false, errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage) });
         }
 
-        // GET: SKUs/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var sKU = await _context.Skus
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (sKU == null)
-            {
-                return NotFound();
-            }
-
-            return View(sKU);
-        }
-
-        // POST: SKUs/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var sKU = await _context.Skus.FindAsync(id);
-            if (sKU != null)
-            {
-                _context.Skus.Remove(sKU);
-            }
-
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-
-        private bool SKUExists(int id)
-        {
-            return _context.Skus.Any(e => e.Id == id);
-        }
+        
     }
 }

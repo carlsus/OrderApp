@@ -1,7 +1,8 @@
-﻿using System.Net;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OrderApp.Models;
+using System.Net;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace OrderApp.Controllers
 {
@@ -48,37 +49,27 @@ namespace OrderApp.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Save([Bind("Id,FirstName,LastName,MobileNumber,City,Long,Lat,DateCreated,CreatedBy,Timestamp,UserId,IsActive")] Customer customer)
+     
+        public async Task<IActionResult> Create([FromBody] Customer customer)
         {
-            customer.DateCreated = DateTime.UtcNow;
-            customer.Timestamp = DateTime.UtcNow;
-            customer.CreatedBy = "System";
-            customer.IsActive = true;
-            customer.UserId = "System";
-            customer.Id = 1;
-            if (!ModelState.IsValid)
+          
+            if (ModelState.IsValid)
             {
+               
+                customer.DateCreated = DateTime.UtcNow;
+                customer.Timestamp = DateTime.UtcNow;
 
-                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                _context.Add(customer);
+                await _context.SaveChangesAsync();
 
-                return Json(new { success = false, issue = customer, errors = ModelState.Values.Where(i => i.Errors.Count > 0) });
+                return Json(new { success = true, message = "Customer created successfully." });
             }
-
-            if (customer.Id == 0)
-            {
-
-                _context.Customers.Add(customer);
-            }
-            else
-            {
-
-
-            }
-
-            _context.SaveChanges();
-
-            return Json(new { success = true, message = "Customer created successfully." });
+            var errors = ModelState.Values
+            .SelectMany(v => v.Errors)
+            .Select(e => e.ErrorMessage)
+            .ToList();
+            return Json(new { success = false, errors });
+            
         }
 
         // GET: Customers/Edit/5
@@ -100,9 +91,8 @@ namespace OrderApp.Controllers
         // POST: Customers/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,FirstName,LastName,MobileNumber,City,Long,Lat,DateCreated,CreatedBy,Timesamp,UserId,IsActive")] Customer customer)
+        [HttpPut]
+        public async Task<IActionResult> Edit(int id, [FromBody] Customer customer)
         {
             if (id != customer.Id)
             {
@@ -113,61 +103,27 @@ namespace OrderApp.Controllers
             {
                 try
                 {
-                    _context.Update(customer);
-                    await _context.SaveChangesAsync();
+                    var local = _context.Customers.Local.FirstOrDefault(c => c.Id == customer.Id);
+                    if (local != null)
+                    {
+                        _context.Entry(local).State = EntityState.Detached;
+                    }
+
+                    _context.Attach(customer);
+                    _context.Entry(customer).State = EntityState.Modified;
+                    _context.SaveChanges();
+
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!CustomerExists(customer.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    throw;
                 }
-                return RedirectToAction(nameof(Index));
+                return Json(new { success = true, message = "Update  successfully." });
             }
-            return View(customer);
+            return Json(new { success = false, errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage) });
         }
 
-        // GET: Customers/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var customer = await _context.Customers
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (customer == null)
-            {
-                return NotFound();
-            }
-
-            return View(customer);
-        }
-
-        // POST: Customers/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var customer = await _context.Customers.FindAsync(id);
-            if (customer != null)
-            {
-                _context.Customers.Remove(customer);
-            }
-
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-
-        private bool CustomerExists(int id)
-        {
-            return _context.Customers.Any(e => e.Id == id);
-        }
+       
+        
     }
 }
