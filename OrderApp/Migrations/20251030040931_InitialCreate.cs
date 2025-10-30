@@ -81,8 +81,7 @@ namespace OrderApp.Migrations
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     CustomerId = table.Column<int>(type: "int", nullable: false),
                     DateOfDelivery = table.Column<DateOnly>(type: "date", nullable: false),
-                    Status = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    status = table.Column<int>(type: "int", nullable: false),
                     AmountDue = table.Column<decimal>(type: "decimal(65,30)", nullable: false),
                     DateCreated = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     CreatedBy = table.Column<string>(type: "longtext", nullable: false)

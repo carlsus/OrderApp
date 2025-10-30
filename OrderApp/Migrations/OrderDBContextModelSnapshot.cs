@@ -138,17 +138,15 @@ namespace OrderApp.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("tinyint(1)");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("varchar(50)");
-
                     b.Property<DateTime>("Timestamp")
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("longtext");
+
+                    b.Property<int>("status")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 

@@ -2,6 +2,18 @@
 
 namespace OrderApp.Models
 {
+
+    public enum StatusType
+    {
+        [Display(Name = "New")]
+        New = 1,
+
+        [Display(Name = "Completed")]
+        Completed = 2,
+
+        [Display(Name = "Cancelled")]
+        Cancelled = 3
+    }
     public class PurchaseOrder
     {
         public int Id { get; set; }
@@ -9,29 +21,21 @@ namespace OrderApp.Models
         [Required]
         public int CustomerId { get; set; }
 
-        public Customer Customer { get; set; } = null!;
+        public Customer Customer { get; set; } 
 
-        [Required(ErrorMessage = "Date of Delivery is required.")]
-      
+     
         public DateOnly DateOfDelivery { get; set; }
 
-        [Required]
-        [StringLength(50)]
-        public string Status { get; set; } = null!;
+      
+        public StatusType status { get; set; } 
 
         [Range(0, double.MaxValue, ErrorMessage = "Amount due must be a positive value.")]
         public decimal AmountDue { get; set; }
 
-        public DateTime DateCreated { get; set; }
-
-        [Required]
-        public string CreatedBy { get; set; } = null!;
-
-        public DateTime Timestamp { get; set; }
-
-        [Required]
-        public string UserId { get; set; } = null!;
-
+        public DateTime DateCreated { get; set; } = DateTime.Now;
+        public string CreatedBy { get; set; } = Environment.UserName;
+        public DateTime Timestamp { get; set; } = DateTime.Now;
+        public string UserId { get; set; } = Environment.UserName;
         public bool IsActive { get; set; }
 
         public List<PurchaseItem> Items { get; set; } = new();
