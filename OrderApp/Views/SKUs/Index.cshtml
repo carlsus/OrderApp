@@ -139,7 +139,11 @@
                             </div>
                             <div class="mb-3">
                                 <label for="Image" class="form-label">Image</label>
-                                <input type="file" name="skuImage" id="Image" class="form-control" accept="image/*" />
+                                
+                                <input type="file" name="Image" id="Image" class="form-control" accept="image/*" />
+
+                                <br />
+                                <img src="" id="preview" width="400" />
 
                             </div>
                             <div class="form-check">
@@ -162,8 +166,15 @@
 @section Scripts {
 
     <script>
-       
 
+         $('#Image').change(function () {
+               const reader = new FileReader();
+               reader.onload = function (e) {
+                   $('#preview').attr('src', e.target.result).show();
+               };
+               reader.readAsDataURL(this.files[0]);
+                  $('#imagePreview').show();
+           });
          $('.edit-btn').click(function () {
              const form = document.getElementById('form0');
             $('#modalTitle').text('Edit SKU');
@@ -173,7 +184,11 @@
             $('#Name').val($(this).data('name'));
             $('#Code').val($(this).data('code'));
             $('#UnitPrice').val('0' + $(this).data('unitprice'));
-           
+
+            var imagePath = $(this).data('image');
+             if (imagePath) {
+                 $('#preview').attr('src', imagePath).show();
+             } 
 
             var isActive = $(this).data('isactive') === 'True' ? true : false;
             $('#IsActive').prop('checked', isActive);
@@ -193,8 +208,7 @@
             formData.append('Code', $('#Code').val());
             formData.append('UnitPrice', parseFloat($('#UnitPrice').val()));
             formData.append('IsActive', $('#IsActive').is(':checked'));
-            formData.append('UserId', $('#UserId').val());
-            formData.append('CreatedBy', $('#CreatedBy').val());
+            
 
             var imageFile = $('#Image')[0].files[0];
             if (imageFile) {

@@ -1,6 +1,5 @@
 ﻿using OrderApp.Helper;
 using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
 
 namespace OrderApp.Models
 {

@@ -201,7 +201,7 @@ namespace OrderApp.Migrations
 
             modelBuilder.Entity("OrderApp.Models.PurchaseItem", b =>
                 {
-                    b.HasOne("OrderApp.Models.PurchaseOrder", null)
+                    b.HasOne("OrderApp.Models.PurchaseOrder", "PurchaseOrder")
                         .WithMany("Items")
                         .HasForeignKey("PurchaseOrderId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -212,6 +212,8 @@ namespace OrderApp.Migrations
                         .HasForeignKey("Skuid")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("PurchaseOrder");
 
                     b.Navigation("Sku");
                 });

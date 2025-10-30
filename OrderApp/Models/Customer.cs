@@ -16,10 +16,11 @@ namespace OrderApp.Models
         public string Lat { get; set; }
         public DateTime DateCreated { get; set; }= DateTime.Now;
         public string CreatedBy { get; set; }= Environment.UserName;
-        public DateTime Timestamp { get; set; }=DateTime.Now;
+        public DateTime Timestamp { get; set; }= DateTime.Now;
         public string UserId { get; set; } = Environment.UserName;
         public bool IsActive { get; set; }
+        
+        ICollection<PurchaseOrder> PurchaseOrders { get; set; }
 
-       
     }
 }

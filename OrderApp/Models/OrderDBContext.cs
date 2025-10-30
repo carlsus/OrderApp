@@ -18,5 +18,14 @@ namespace OrderApp.Models
         public virtual DbSet<PurchaseOrder> PurchaseOrders { get; set; }
 
         public virtual DbSet<SKU> Skus { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            // Configure relationships if needed (e.g., one-to-many between PurchaseOrder and PurchaseOrderItem)
+            modelBuilder.Entity<PurchaseOrder>()
+                .HasMany(po => po.Items)
+                .WithOne(poi => poi.PurchaseOrder)
+                .HasForeignKey(poi => poi.PurchaseOrderId);
+        }
     }
 }

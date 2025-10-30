@@ -18,9 +18,6 @@ namespace OrderApp.Models
     {
         public int Id { get; set; }
 
-        [Required]
-        public int CustomerId { get; set; }
-
         public Customer Customer { get; set; } 
 
      
@@ -38,6 +35,6 @@ namespace OrderApp.Models
         public string UserId { get; set; } = Environment.UserName;
         public bool IsActive { get; set; }
 
-        public List<PurchaseItem> Items { get; set; } = new();
+        public ICollection<PurchaseItem> Items { get; set; } 
     }
 }

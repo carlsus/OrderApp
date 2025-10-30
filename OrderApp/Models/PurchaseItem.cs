@@ -17,5 +17,7 @@
         public string UserId { get; set; } = string.Empty;
 
         public SKU Sku { get; set; } = null!;
+
+        public PurchaseOrder PurchaseOrder { get; set; }
     }
 }

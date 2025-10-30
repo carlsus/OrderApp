@@ -12,10 +12,11 @@ namespace OrderApp.Controllers
     public class SKUsController : Controller
     {
         private readonly OrderDBContext _context;
-
-        public SKUsController(OrderDBContext context)
+        private readonly IWebHostEnvironment _env;
+        public SKUsController(OrderDBContext context, IWebHostEnvironment env)
         {
             _context = context;
+            _env = env;
         }
 
         // GET: SKUs
@@ -56,6 +57,26 @@ namespace OrderApp.Controllers
         {
             if (ModelState.IsValid)
             {
+                if (Image == null || Image.Length == 0)
+                    return Json(new { success = false, message = "No file selected." });
+
+                
+                string uploadPath = Path.Combine(_env.WebRootPath, "images");
+
+                
+                if (!Directory.Exists(uploadPath))
+                    Directory.CreateDirectory(uploadPath);
+
+                
+                string fileName = Guid.NewGuid().ToString() + Path.GetExtension(Image.FileName);
+                string filePath = Path.Combine(uploadPath, fileName);
+
+                // Save the file
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await Image.CopyToAsync(stream);
+                }
+                sku.ImagePath = $"/images/{fileName}";
                 _context.Add(sku);
                 await _context.SaveChangesAsync();
 
@@ -99,6 +120,32 @@ namespace OrderApp.Controllers
             {
                 try
                 {
+                    var sku = _context.Skus.FirstOrDefault(c => c.Id == id);
+                    if (Image == null || Image.Length == 0)
+                    return Json(new { success = false, message = "No file selected." });
+
+                    string uploadPath = Path.Combine(_env.WebRootPath, "images");
+                    if (!Directory.Exists(uploadPath))
+                        Directory.CreateDirectory(uploadPath);
+
+                    // Delete old image kung meron
+                    if (!string.IsNullOrEmpty(sku.ImagePath))
+                    {
+                        string oldImagePath = Path.Combine(uploadPath, sku.ImagePath);
+                        if (System.IO.File.Exists(oldImagePath))
+                            System.IO.File.Delete(oldImagePath);
+                    }
+
+                    // Save new image
+                    string newFileName = Guid.NewGuid().ToString() + Path.GetExtension(Image.FileName);
+                    string newFilePath = Path.Combine(uploadPath, newFileName);
+
+                    using (var stream = new FileStream(newFilePath, FileMode.Create))
+                    {
+                        await Image.CopyToAsync(stream);
+                    }
+
+                    sKU.ImagePath = $"/images/{newFileName}";
                     var local = _context.Skus.Local.FirstOrDefault(c => c.Id == sKU.Id);
                     if (local != null)
                     {

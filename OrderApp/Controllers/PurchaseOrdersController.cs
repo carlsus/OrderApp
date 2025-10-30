@@ -55,17 +55,37 @@ namespace OrderApp.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,CustomerId,DateOfDelivery,Status,AmountDue,DateCreated,CreatedBy,Timestamp,UserId,IsActive")] PurchaseOrder purchaseOrder)
+    
+        public async Task<IActionResult> Create([FromBody] PurchaseOrder po)
         {
+           
+            po.AmountDue = 200;
+            po.status = StatusType.New;
+            po.DateOfDelivery=DateOnly.FromDateTime(DateTime.Now.AddDays(7));
+            po.DateCreated = DateTime.Now;
+            po.IsActive = true;
+            po.UserId = "aa";
+            po.CreatedBy = "aa";
+            po.Timestamp = DateTime.Now;
+            po.Customer = await _context.Customers.FirstOrDefaultAsync();
+
             if (ModelState.IsValid)
             {
-                _context.Add(purchaseOrder);
+                if (po == null || po.Items == null || !po.Items.Any())
+                    return BadRequest("Invalid purchase order data.");
+
+                
+
+                _context.PurchaseOrders.Add(po);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+
+                
             }
-            ViewData["CustomerId"] = new SelectList(_context.Customers, "Id", "Id", purchaseOrder.CustomerId);
-            return View(purchaseOrder);
+            var errors = ModelState.Values
+            .SelectMany(v => v.Errors)
+            .Select(e => e.ErrorMessage)
+            .ToList();
+            return Json(new { success = false, errors });
         }
 
         // GET: PurchaseOrders/Edit/5
@@ -81,7 +101,7 @@ namespace OrderApp.Controllers
             {
                 return NotFound();
             }
-            ViewData["CustomerId"] = new SelectList(_context.Customers, "Id", "Id", purchaseOrder.CustomerId);
+            
             return View(purchaseOrder);
         }
 
@@ -117,7 +137,7 @@ namespace OrderApp.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CustomerId"] = new SelectList(_context.Customers, "Id", "Id", purchaseOrder.CustomerId);
+            
             return View(purchaseOrder);
         }
 

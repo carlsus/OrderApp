@@ -12,7 +12,7 @@ using OrderApp.Models;
 namespace OrderApp.Migrations
 {
     [DbContext(typeof(OrderDBContext))]
-    [Migration("20251030040931_InitialCreate")]
+    [Migration("20251030103153_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -204,7 +204,7 @@ namespace OrderApp.Migrations
 
             modelBuilder.Entity("OrderApp.Models.PurchaseItem", b =>
                 {
-                    b.HasOne("OrderApp.Models.PurchaseOrder", null)
+                    b.HasOne("OrderApp.Models.PurchaseOrder", "PurchaseOrder")
                         .WithMany("Items")
                         .HasForeignKey("PurchaseOrderId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -215,6 +215,8 @@ namespace OrderApp.Migrations
                         .HasForeignKey("Skuid")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("PurchaseOrder");
 
                     b.Navigation("Sku");
                 });

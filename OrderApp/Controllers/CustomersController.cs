@@ -56,9 +56,6 @@ namespace OrderApp.Controllers
             if (ModelState.IsValid)
             {
                
-                customer.DateCreated = DateTime.UtcNow;
-                customer.Timestamp = DateTime.UtcNow;
-
                 _context.Add(customer);
                 await _context.SaveChangesAsync();
 

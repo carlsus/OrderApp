@@ -108,174 +108,183 @@
                 <div class="modal-body">
                     <div class="row">
                         <!-- Left Column: Form Fields -->
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label>First Name</label>
-                                <input type="text" name="FirstName" id="FirstName" class="form-control"
-                                       required />
-                            </div>
-                            <div class="mb-3">
-                                <label>Last Name</label>
-                                <input type="text" name="LastName" id="LastName" class="form-control"
-                                       required />
-                            </div>
-                            <div class="mb-3">
-                                <label>Mobile Number</label>
-                                <input type="text" name="MobileNumber" id="MobileNumber" class="form-control"
-                                       inputmode="numeric" maxlength="10" required />
-                            </div>
-                            <div class="mb-3">
-                                <label>City</label>
-                                <input type="text" name="City" id="City" class="form-control" required />
-                            </div>
-                            <div class="mb-3">
-                                <label>Longitude</label>
-                                <input type="text" name="Long" id="Long" class="form-control" readonly required />
-                            </div>
-                            <div class="mb-3">
-                                <label>Latitude</label>
-                                <input type="text" name="Lat" id="Lat" class="form-control" readonly required />
-                            </div>
-                            <div class="form-check">
-                                <input type="checkbox" name="IsActive" checked id="IsActive"
-                                       class="form-check-input" />
-                                <label class="form-check-label" for="IsActive">Is Active</label>
-                            </div>
+                        <div class="col-md-12">
+                            <table id="itemTable" class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>SKU </th>
+                                        <th>Qty</th>
+                                        <th>Price</th>
+                                        <th>Image</th>
+                                        <th>Total</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><input type="text" class="form-control sku" placeholder="SKU"></td>
+                                        <td><input type="number" class="form-control qty" value="1" min="1"></td>
+                                        <td><input type="number" class="form-control price" value="0" min="0"></td>
+                                        <td></td>
+                                        <td class="total">0</td>
+                                        
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <button type="button" class="btn btn-secondary" id="openAddRow">Add Item</button>
+                            
                         </div>
 
-                        <!-- Right Column: Google Map -->
-                        <div class="col-md-6">
-                            <label class="form-label">Select Location</label>
-                            <div id="map" style="width:100%;height:400px;"></div>
-                        </div>
+                        
                     </div>
                 </div>
 
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary" id="submitBtn">Save</button>
+                    <button type="submit" class="btn btn-primary" id="btnSave">Save</button>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                 </div>
             </div>
         </form>
     </div>
 </div>
+
+<div class="modal fade" id="addRow"  tabindex="-1" aria-labelledby="addItemModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addItemModalLabel">Add Item</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Row for the two-column layout -->
+                <div class="row">
+                    <!-- Left Column: Form Fields -->
+                    <div class="col-md-6">
+                        <!-- SKU Search -->
+                        <div class="mb-3">
+                            <label>SKU</label>
+                            <input type="text" id="skuSearch" class="form-control" placeholder="Type to search..." autocomplete="off">
+                            <div id="skuSearching" class="list-group position-absolute w-100" style="z-index: 1000;"></div>
+                        </div>
+
+                        <!-- Hidden field to store selected SKUId -->
+                        <input type="hidden" id="purchaseOrderSKUId" name="SKUId" />
+
+                        <!-- Quantity -->
+                        <div class="mb-3">
+                            <label>Quantity</label>
+                            <input type="number" class="form-control" id="skuQuantity" name="Quantity" value="1" min="1" />
+                        </div>
+
+                        <!-- SubTotal -->
+                        <div class="mb-3">
+                            <label>SubTotal</label>
+                            <input type="text" class="form-control" id="skuSubTotal" disabled />
+                        </div>
+                    </div>
+
+                    <!-- Right Column: SKU Image -->
+                    <div class="col-md-6">
+                        <div class="text-center">
+                            <img id="skuImagePreview" src="#" alt="Image Preview" style="max-width: 100%; height: auto; display: none; border: 1px solid #ddd; padding: 5px;" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="addItem" class="btn btn-primary">Save Item</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCoKMpsi0cxRs2Vdv9tnFEfnLCGW5O2ctg&callback=initMap" async
-            defer></script>
+   
     <script>
-        let map;
-        let marker;
-
-        const defaultLoc = { lat: 14.5995, lng: 120.9842 };
 
 
-        function initMap() {
-
-            // Initialize map
-            map = new google.maps.Map(document.getElementById("map"), {
-                center: defaultLoc,
-                zoom: 12,
-            });
-
-            // Create draggable marker
-            marker = new google.maps.Marker({
-                position: defaultLoc,
-                map: map,
-                draggable: true,
-            });
-
-
-            document.getElementById("Lat").value = defaultLoc.lat;
-            document.getElementById("Long").value = defaultLoc.lng;
-
-
-            marker.addListener("dragend", (event) => {
-                const lat = event.latLng.lat();
-                const lng = event.latLng.lng();
-                document.getElementById("Lat").value = lat;
-                document.getElementById("Long").value = lng;
-            });
-
-
-            map.addListener("click", (event) => {
-                marker.setPosition(event.latLng);
-                const lat = event.latLng.lat();
-                const lng = event.latLng.lng();
-                document.getElementById("Lat").value = lat;
-                document.getElementById("Long").value = lng;
-            });
-        }
-
-
-         $('.edit-btn').click(function () {
-             const form = document.getElementById('form0');
-            $('#modalTitle').text('Edit Customer');
-            $('#submitBtn').text('Update');
-            $('#Id').val($(this).data('id'));
-            $('#FirstName').val($(this).data('firstname'));
-            $('#LastName').val($(this).data('lastname'));
-            $('#MobileNumber').val('0' + $(this).data('mobile'));
-            $('#City').val($(this).data('city'));
-            $('#Long').val($(this).data('long'));
-            $('#Lat').val($(this).data('lat'));
-
-            var isActive = $(this).data('isactive') === 'True' ? true : false;
-            $('#IsActive').prop('checked', isActive);
-             $('#IsActive').attr('disabled', false);
-            const lat = parseFloat($(this).data('lat'));
-            const lng = parseFloat($(this).data('long'));
-            defaultLoc = { lat: lat, lng: lng };
-
+            $("#addItem").click(function () {
+            var newRow = `
+            <tr>
+                <td><input type="text" class="form-control sku" placeholder="SKU"></td>
+                <td><input type="number" class="form-control qty" value="1" min="1"></td>
+                <td><input type="number" class="form-control price" value="0" min="0"></td>
+                <td></td>
+                <td class="total">0</td>
+            </tr>`;
+            $("#itemTable tbody").append(newRow);
         });
 
-        $('#form0').submit(function (event) {
-            event.preventDefault();
+        
 
-            var Id = $('#Id').val();
+        
+        $(document).on("input", ".qty, .price", function () {
+            var row = $(this).closest("tr");
+            var qty = parseFloat(row.find(".qty").val()) || 0;
+            var price = parseFloat(row.find(".price").val()) || 0;
+            row.find(".total").text((qty * price).toFixed(2));
+        });
 
-            var formData = {
-                firstName: $('#FirstName').val(),
-                lastName: $('#LastName').val(),
-                mobileNumber: $('#MobileNumber').val(),
-                city: $('#City').val(),
-                long: $('#Long').val(),
-                lat: $('#Lat').val(),
-                isActive: $('#IsActive').is(':checked'),
-                userId: $('#userId').val(),
-                createdBy: $('#createdBy').val()
-            };
+        document.getElementById("openAddRow").addEventListener("click", function () {
+            var itemModal = new bootstrap.Modal(document.getElementById('addRow'));
+            itemModal.show();
+        });
 
+        // 💾 Save PO via AJAX
+        $("#btnSave").click(function (e) {
+            e.preventDefault();
+            // var supplierName = $("#supplierName").val().trim();
+            // if (supplierName === "") {
+            //     alert("Please enter supplier name.");
+            //     return;
+            // }
+            
+           
+        let po = {
+          CustomerId: "1",
+         
+          
+          items: [
+            {  skuid:1, quantity: 2, price: 500 },
+            {  skuid:2, quantity: 2, price: 222 }
+         
+          ]
+        };
+            
+            var items=[];
+            $("#itemTable tbody tr").each(function () {
+                var item = {
+                    
+                    Quantity: parseInt($(this).find(".qty").val()),
+                    Price: parseFloat($(this).find(".price").val())
+                };
+               items.push(item);
+              
+            });
 
-            if (Id) {
-                formData.id = parseInt(Id);
-            }
-
-            var url = Id ? '/PurchaseOrders/Edit/' + Id : '/PurchaseOrders/Create';
-            var method = Id ? 'PUT' : 'POST';
-
-
+           
             $.ajax({
-                url: url,
-                method: method,
-                data: JSON.stringify(formData),
-                contentType: "application/json; charset=utf-8",
-                dataType: "json",
-                success: function (response) {
-
-                   if (response.success) {
-                        location.reload();
-                         $('#AddOrEdit').modal('hide');
+                url: '/PurchaseOrders/Create',
+                type: 'POST',
+               data: JSON.stringify(po),
+                contentType: 'application/json',
+                success: function (res) {
+                    if (res.success) {
+                        $("#result").html(
+                            `<div class="alert alert-success">PO Created! Number: ${res.poNumber}</div>`
+                        );
+                        $("#form0")[0].reset();
+                        $("#itemTable tbody").html("");
                     } else {
-                        alert(response.errors.join("\n"));
+                        alert(res.message);
                     }
                 },
-                error: function (response) {
-                    console.log(response);
-                },
-                complete: function () {
-                    $('#btnSave').removeAttr('disabled');
+                error: function () {
+                    alert("Error saving purchase order.");
                 }
-            })
+            });
         });
     </script>
 }
