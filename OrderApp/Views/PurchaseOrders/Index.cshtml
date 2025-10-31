@@ -37,7 +37,8 @@
                     <div class="card mb-4">
                         <div class="card-header">
 
-                            <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#AddOrEdit">Create New</a>
+                            <a href="#" class="btn btn-primary" data-bs-toggle="modal"
+                                data-bs-target="#AddOrEdit">Create New</a>
 
                         </div>
                         <!-- /.card-header -->
@@ -127,16 +128,16 @@
                                         <td><input type="number" class="form-control price" value="0" min="0"></td>
                                         <td></td>
                                         <td class="total">0</td>
-                                        
+
                                     </tr>
                                 </tbody>
                             </table>
 
                             <button type="button" class="btn btn-secondary" id="openAddRow">Add Item</button>
-                            
+
                         </div>
 
-                        
+
                     </div>
                 </div>
 
@@ -149,7 +150,7 @@
     </div>
 </div>
 
-<div class="modal fade" id="addRow"  tabindex="-1" aria-labelledby="addItemModalLabel" aria-hidden="true">
+<div class="modal fade" id="addRow" tabindex="-1" aria-labelledby="addItemModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
@@ -164,8 +165,10 @@
                         <!-- SKU Search -->
                         <div class="mb-3">
                             <label>SKU</label>
-                            <input type="text" id="skuSearch" class="form-control" placeholder="Type to search..." autocomplete="off">
-                            <div id="skuSearching" class="list-group position-absolute w-100" style="z-index: 1000;"></div>
+                            <input type="text" id="skuSearch" class="form-control" placeholder="Type to search..."
+                                autocomplete="off">
+                            <div id="skuSearching" class="list-group position-absolute w-100" style="z-index: 1000;">
+                            </div>
                         </div>
 
                         <!-- Hidden field to store selected SKUId -->
@@ -174,7 +177,8 @@
                         <!-- Quantity -->
                         <div class="mb-3">
                             <label>Quantity</label>
-                            <input type="number" class="form-control" id="skuQuantity" name="Quantity" value="1" min="1" />
+                            <input type="number" class="form-control" id="skuQuantity" name="Quantity" value="1"
+                                min="1" />
                         </div>
 
                         <!-- SubTotal -->
@@ -187,7 +191,8 @@
                     <!-- Right Column: SKU Image -->
                     <div class="col-md-6">
                         <div class="text-center">
-                            <img id="skuImagePreview" src="#" alt="Image Preview" style="max-width: 100%; height: auto; display: none; border: 1px solid #ddd; padding: 5px;" />
+                            <img id="skuImagePreview" src="#" alt="Image Preview"
+                                style="max-width: 100%; height: auto; display: none; border: 1px solid #ddd; padding: 5px;" />
                         </div>
                     </div>
                 </div>
@@ -201,25 +206,25 @@
 </div>
 
 @section Scripts {
-   
+
     <script>
 
 
-            $("#addItem").click(function () {
+        $("#addItem").click(function () {
             var newRow = `
-            <tr>
-                <td><input type="text" class="form-control sku" placeholder="SKU"></td>
-                <td><input type="number" class="form-control qty" value="1" min="1"></td>
-                <td><input type="number" class="form-control price" value="0" min="0"></td>
-                <td></td>
-                <td class="total">0</td>
-            </tr>`;
+                <tr>
+                    <td><input type="text" class="form-control sku" placeholder="SKU"></td>
+                    <td><input type="number" class="form-control qty" value="1" min="1"></td>
+                    <td><input type="number" class="form-control price" value="0" min="0"></td>
+                    <td></td>
+                    <td class="total">0</td>
+                </tr>`;
             $("#itemTable tbody").append(newRow);
         });
 
-        
 
-        
+
+
         $(document).on("input", ".qty, .price", function () {
             var row = $(this).closest("tr");
             var qty = parseFloat(row.find(".qty").val()) || 0;
@@ -232,43 +237,39 @@
             itemModal.show();
         });
 
-        // 💾 Save PO via AJAX
+
         $("#btnSave").click(function (e) {
             e.preventDefault();
-            // var supplierName = $("#supplierName").val().trim();
-            // if (supplierName === "") {
-            //     alert("Please enter supplier name.");
-            //     return;
-            // }
-            
-           
-        let po = {
-          CustomerId: "1",
-         
-          
-          items: [
-            {  skuid:1, quantity: 2, price: 500 },
-            {  skuid:2, quantity: 2, price: 222 }
-         
-          ]
-        };
-            
-            var items=[];
+
+
+
+            let po = {
+                CustomerId: "1",
+
+
+                items: [
+                    { skuid: 1, quantity: 2, price: 500 },
+                    { skuid: 2, quantity: 2, price: 222 }
+
+                ]
+            };
+
+            var items = [];
             $("#itemTable tbody tr").each(function () {
                 var item = {
-                    
+
                     Quantity: parseInt($(this).find(".qty").val()),
                     Price: parseFloat($(this).find(".price").val())
                 };
-               items.push(item);
-              
+                items.push(item);
+
             });
 
-           
+
             $.ajax({
                 url: '/PurchaseOrders/Create',
                 type: 'POST',
-               data: JSON.stringify(po),
+                data: JSON.stringify(po),
                 contentType: 'application/json',
                 success: function (res) {
                     if (res.success) {

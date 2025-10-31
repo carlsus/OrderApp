@@ -55,17 +55,14 @@ namespace OrderApp.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-    
+
         public async Task<IActionResult> Create([FromBody] PurchaseOrder po)
         {
-           
+
             po.AmountDue = 200;
             po.status = StatusType.New;
-            po.DateOfDelivery=DateOnly.FromDateTime(DateTime.Now.AddDays(7));
-            po.DateCreated = DateTime.Now;
+            po.DateOfDelivery = DateOnly.FromDateTime(DateTime.Now.AddDays(7));
             po.IsActive = true;
-            po.UserId = "aa";
-            po.CreatedBy = "aa";
             po.Timestamp = DateTime.Now;
             po.Customer = await _context.Customers.FirstOrDefaultAsync();
 
@@ -74,12 +71,8 @@ namespace OrderApp.Controllers
                 if (po == null || po.Items == null || !po.Items.Any())
                     return BadRequest("Invalid purchase order data.");
 
-                
-
                 _context.PurchaseOrders.Add(po);
                 await _context.SaveChangesAsync();
-
-                
             }
             var errors = ModelState.Values
             .SelectMany(v => v.Errors)
@@ -101,7 +94,7 @@ namespace OrderApp.Controllers
             {
                 return NotFound();
             }
-            
+
             return View(purchaseOrder);
         }
 
@@ -137,7 +130,7 @@ namespace OrderApp.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            
+
             return View(purchaseOrder);
         }
 
