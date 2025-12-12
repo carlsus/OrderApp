@@ -26,7 +26,7 @@ namespace OrderApp.Models
       
         public StatusType status { get; set; } 
 
-        [Range(0, double.MaxValue, ErrorMessage = "Amount due must be a positive value.")]
+       
         public decimal AmountDue { get; set; }
 
         public DateTime DateCreated { get; set; } = DateTime.Now;

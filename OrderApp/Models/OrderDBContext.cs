@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿
+using Microsoft.EntityFrameworkCore;
 
 namespace OrderApp.Models
 {
@@ -21,11 +22,7 @@ namespace OrderApp.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Configure relationships if needed (e.g., one-to-many between PurchaseOrder and PurchaseOrderItem)
-            modelBuilder.Entity<PurchaseOrder>()
-                .HasMany(po => po.Items)
-                .WithOne(poi => poi.PurchaseOrder)
-                .HasForeignKey(poi => poi.PurchaseOrderId);
+            
         }
     }
 }
